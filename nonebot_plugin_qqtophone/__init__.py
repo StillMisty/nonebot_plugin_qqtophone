@@ -1,8 +1,8 @@
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
-from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import Bot, Event, Message
+from nonebot.adapters.onebot.v11 import Message
 from nonebot.params import CommandArg
+from nonebot.log import logger
 
 import httpx
 
@@ -20,24 +20,26 @@ async def query_qq(qq:str):
         
         url = r"https://zy.xywlapi.cc/qqapi"
 
-        async with httpx.AsyncClient() as httpx_client:
-            try:
-                res = await httpx_client.get(url=url,params={"qq":qq},timeout=10)
-            except TimeoutError:
-                return "查询失败，请求超时"
-        
-        if res.status_code != 200:
-            return "查询失败，服务器错误"
-                
-        res = res.json()
-        status = res.get("status")
-        if status == 200:
-            return f'查询结果：\nQQ号：{res["qq"]}\n手机号：{res["phone"]}\n归属地：{res["phonediqu"]}'
-        elif status == 500:
-            return "查询失败，信息不存在"
-        else:
-            return "查询失败，未知错误"
+        try:
+            async with httpx.AsyncClient() as httpx_client:
+                res = await httpx_client.get(url=url,params={"qq":qq}, timeout=10)
             
+            if res.status_code != 200:
+                return f"查询失败，服务器错误，状态码{res.status_code}"
+
+            res = res.json()
+            status = res.get("status")
+            if status == 200:
+                return f'查询结果：\nQQ号：{res["qq"]}\n手机号：{res["phone"]}\n归属    地：{res["phonediqu"]}'
+            elif status == 500:
+                return "查询失败，信息不存在"
+            else:
+                return "查询失败，未知错误"
+        except Exception as e:
+            logger.error(f"QQ查询失败，{e}")
+            return f"查询失败，请稍后再试"
+        
+        
     else:
         return "QQ号格式错误"
             
