@@ -30,7 +30,7 @@ async def query_qq(qq:str):
             res = res.json()
             status = res.get("status")
             if status == 200:
-                return f'查询结果：\nQQ号：{res["qq"]}\n手机号：{res["phone"]}\n归属    地：{res["phonediqu"]}'
+                return f'查询结果：\nQQ号：{res["qq"]}\n手机号：{res["phone"]}\n归属地：{res["phonediqu"]}'
             elif status == 500:
                 return "查询失败，信息不存在"
             else:
