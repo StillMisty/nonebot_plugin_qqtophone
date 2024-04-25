@@ -11,6 +11,7 @@ __plugin_meta__ = PluginMetadata(
     description="通过QQ号查询手机号",
     type="application",
     usage="查询q [QQ号|@群友]",
+    homepage="https://github.com/StillMisty/nonebot_plugin_qqtophone",
 )
 
 qqtophone = on_command("查询q", priority=5, block=True, aliases=set(["查询Q", "开"]))
