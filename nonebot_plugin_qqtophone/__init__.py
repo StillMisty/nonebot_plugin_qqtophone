@@ -18,15 +18,13 @@ qqtophone = on_command("查询q", priority=5, block=True, aliases=set(["查询Q"
 
 
 async def query_qq(qq: str):
-    if not qq.isdigit() and 5 <= len(qq) <= 11:
+    if not (qq.isdigit() and 5 <= len(qq) <= 11):
         return "QQ号格式错误"
-    url = r"https://zy.xywlapi.cc/qqapi"
-
     try:
+        url = r"https://zy.xywlapi.cc/qqapi"
         async with httpx.AsyncClient() as httpx_client:
             res = await httpx_client.get(url=url, params={"qq": qq},timeout=10)
     except TimeoutError:
-        logger.error("QQ查询失败,请求超时")
         return "查询失败，请稍后再试"
     
     if res.status_code != 200:
@@ -39,6 +37,7 @@ async def query_qq(qq: str):
     elif status == 500:
         return "查询失败，信息不存在"
     else:
+        logger.error(f"查询失败，未知错误，返回信息：{res}")
         return "查询失败，未知错误"
 
 
