@@ -18,7 +18,7 @@ qqtophone = on_command("查询q", priority=5, block=True, aliases=set(["查询Q"
 
 
 async def query_qq(qq: str):
-    if not (qq.isdigit() and 5 <= len(qq) <= 11):
+    if not 5 <= len(qq) <= 11:
         return "QQ号格式错误"
     try:
         url = r"https://zy.xywlapi.cc/qqapi"
@@ -52,5 +52,6 @@ async def _(args: Message = CommandArg()):
         if seg.type == "text":
             qq = seg.data["text"]
             break
-
-    await qqtophone.finish(await query_qq(qq), at_sender=True)
+        
+    if qq.isdigit():
+        await qqtophone.finish(await query_qq(qq), at_sender=True)
