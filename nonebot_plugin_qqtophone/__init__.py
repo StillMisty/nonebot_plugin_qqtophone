@@ -11,11 +11,11 @@ __plugin_meta__ = PluginMetadata(
     name="QQ查询",
     description="通过QQ号查询手机号",
     type="application",
-    usage="查询q [QQ号|@群友]",
+    usage="开 [QQ号|@群友]",
     homepage="https://github.com/StillMisty/nonebot_plugin_qqtophone",
 )
 
-qqtophone = on_command("查询q", priority=5, block=True)
+qqtophone = on_command("开", priority=5, block=True)
 
 
 async def query_qq(qq: str) -> tuple[str, bool]:
