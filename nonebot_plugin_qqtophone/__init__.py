@@ -21,9 +21,10 @@ async def is_at_qq(args: Message = CommandArg()) -> bool:
         if seg.type == "at":
             return True
         if seg.type == "text":
-            text = seg.data["text"].strip()
-            if text.isdigit() and 6 <= len(text) <= 12:
-                return True
+            texts: str = seg.data["text"].strip()
+            for text in texts.split():
+                if text.isdigit() and 6 <= len(text) <= 12:
+                    return True
     return False
 
 
@@ -31,7 +32,6 @@ qqtophone = on_command("开", priority=5, block=True, rule=is_at_qq)
 
 
 async def query_qq(qq: str) -> str:
-    """查询QQ号对应的手机号"""
     try:
         url = "https://api.xywlapi.cc/qqapi"
         async with httpx.AsyncClient(timeout=10) as client:
@@ -67,9 +67,10 @@ async def _(bot: Bot, args: Message = CommandArg()):
             qqs.add(str(seg.data["qq"]))
 
         elif seg.type == "text":
-            text = seg.data["text"].strip()
-            if text.isdigit() and 6 <= len(text) <= 12:
-                qqs.add(text)
+            texts: str = seg.data["text"].strip()
+            for text in texts.split():
+                if text.isdigit() and 6 <= len(text) <= 12:
+                    qqs.add(text)
 
     if not qqs:
         await qqtophone.finish("未提供有效的QQ号", at_sender=True)
