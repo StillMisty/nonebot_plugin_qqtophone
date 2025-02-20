@@ -62,5 +62,5 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     msg, success = await query_qq(qq)
     msg_id = (await bot.send(event, msg, at_sender=True))["message_id"]
     if success:
-        await sleep(20)
+        await sleep(20) # 20秒后删除查询结果
         await bot.delete_msg(message_id=msg_id)
