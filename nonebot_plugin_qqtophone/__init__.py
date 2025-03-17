@@ -1,11 +1,12 @@
-from nonebot.plugin import PluginMetadata
-from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Message, Bot
-from nonebot.params import CommandArg
-from nonebot.log import logger
+import ssl
+from asyncio import gather, sleep
 
 import httpx
-from asyncio import sleep, gather
+from nonebot import on_command
+from nonebot.adapters.onebot.v11 import Bot, Message
+from nonebot.log import logger
+from nonebot.params import CommandArg
+from nonebot.plugin import PluginMetadata
 
 __plugin_meta__ = PluginMetadata(
     name="QQ查询",
@@ -14,6 +15,12 @@ __plugin_meta__ = PluginMetadata(
     usage="开 [QQ号|@群友]",
     homepage="https://github.com/StillMisty/nonebot_plugin_qqtophone",
 )
+
+# 忽略ssl证书
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+ssl_context.set_ciphers("DEFAULT@SECLEVEL=2")
 
 
 async def is_at_qq(args: Message = CommandArg()) -> bool:
@@ -34,7 +41,7 @@ qqtophone = on_command("开", priority=5, block=True, rule=is_at_qq)
 async def query_qq(qq: str) -> str:
     try:
         url = "https://api.xywlapi.cc/qqapi"
-        async with httpx.AsyncClient(timeout=10) as client:
+        async with httpx.AsyncClient(timeout=10, verify=ssl_context) as client:
             res = await client.get(url, params={"qq": qq})
             res.raise_for_status()
             data = res.json()
