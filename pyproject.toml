@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-qqtophone"
-version = "0.2.1"
+version = "0.2.2"
 authors = [{ name = "StillMisty", email = "1772797842@qq.com" }]
 description = "基于 Nonebot2，调用 API 获取对应 QQ 号码的信息。"
 readme = "README.md"

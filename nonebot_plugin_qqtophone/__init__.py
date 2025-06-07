@@ -1,4 +1,3 @@
-import ssl
 from asyncio import gather, sleep
 
 import httpx
@@ -15,12 +14,6 @@ __plugin_meta__ = PluginMetadata(
     usage="开 [QQ号|@群友]",
     homepage="https://github.com/StillMisty/nonebot_plugin_qqtophone",
 )
-
-# 忽略ssl证书
-ssl_context = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-ssl_context.set_ciphers("DEFAULT@SECLEVEL=2")
 
 
 async def is_at_qq(args: Message = CommandArg()) -> bool:
@@ -40,8 +33,8 @@ qqtophone = on_command("开", priority=5, block=True, rule=is_at_qq)
 
 async def query_qq(qq: str) -> str:
     try:
-        url = "https://api.xywlapi.cc/qqapi"
-        async with httpx.AsyncClient(timeout=10, verify=ssl_context) as client:
+        url = "https://www.xywlapi.cc/qqapi"
+        async with httpx.AsyncClient(timeout=10) as client:
             res = await client.get(url, params={"qq": qq})
             res.raise_for_status()
             data = res.json()
@@ -86,6 +79,7 @@ async def _(bot: Bot, args: Message = CommandArg()):
     tasks = [get_info(bot, qq) for qq in qqs]
     results = await gather(*tasks)
     msg_id = (await qqtophone.send("\n\n".join(results)))["message_id"]
+    # 等待20秒后撤回消息
     await sleep(20)
     try:
         await bot.delete_msg(message_id=msg_id)
@@ -93,7 +87,7 @@ async def _(bot: Bot, args: Message = CommandArg()):
         logger.exception(f"删除消息失败: {e}")
 
 
-async def get_info(bot: Bot, qq: str) -> tuple[str, bool]:
+async def get_info(bot: Bot, qq: str) -> str:
     msg = await query_qq(qq)
-    nickname = (await bot.get_stranger_info(user_id=qq))["nickname"]
+    nickname = (await bot.get_stranger_info(user_id=int(qq)))["nickname"]
     return f"{nickname}，{msg}"
